@@ -3,6 +3,7 @@ import { BookOpen, Sparkles, Clock, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import islamicPattern from "@/assets/islamic-pattern-header.jpg";
+import faviconLogo from "/favicon.png";
 
 export function Header() {
   const location = useLocation();
@@ -35,8 +36,12 @@ export function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2 sm:gap-3 group">
-            <div className="p-2 sm:p-2.5 rounded-xl bg-quran-gold/20 group-hover:bg-quran-gold/30 transition-all duration-300 group-hover:scale-105">
-              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-quran-gold" />
+            <div className="p-1.5 sm:p-2 rounded-xl bg-quran-gold/20 group-hover:bg-quran-gold/30 transition-all duration-300 group-hover:scale-105 overflow-hidden">
+              <img 
+                src={faviconLogo} 
+                alt="Al-Quran Digital Logo" 
+                className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-lg"
+              />
             </div>
             <div>
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-primary-foreground flex items-center gap-2">
