@@ -357,4 +357,24 @@
       min-width: 44px;
     }
   }
+
+  /* Safe area padding for bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Font utilities */
+  .font-arabic {
+    font-family: "Amiri", "Traditional Arabic", serif;
+    direction: rtl;
+  }
+
+  /* Warm color variants using design tokens */
+  .text-quran-gold {
+    color: hsl(var(--quran-gold));
+  }
+
+  .bg-quran-gold {
+    background-color: hsl(var(--quran-gold));
+  }
 }
