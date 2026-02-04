@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { PrayerTimeCard } from "@/components/PrayerTimeCard";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { BottomNav } from "@/components/BottomNav";
 import { MapPin, Clock, Navigation, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -154,7 +155,7 @@ const ShalatPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pb-20 md:pb-0">
       <Header />
 
       <main className="container flex-1 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
@@ -334,8 +335,8 @@ const ShalatPage = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card/50 backdrop-blur-sm mt-auto">
+      {/* Footer - hidden on mobile */}
+      <footer className="hidden md:block border-t border-border bg-card/50 backdrop-blur-sm mt-auto">
         <div className="container py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
             <p className="text-xs sm:text-sm text-muted-foreground">
@@ -355,6 +356,9 @@ const ShalatPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Bottom Navigation - mobile only */}
+      <BottomNav />
     </div>
   );
 };

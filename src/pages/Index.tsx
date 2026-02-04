@@ -6,10 +6,23 @@ import { SearchBar } from "@/components/SearchBar";
 import { SurahCard } from "@/components/SurahCard";
 import { SurahCardSkeleton } from "@/components/Skeletons";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { BookMarked, ScrollText, Layers } from "lucide-react";
+import { BottomNav } from "@/components/BottomNav";
+import { LastReadCard, LastReadEmpty } from "@/components/LastReadCard";
+import { FilterTabs, FilterType } from "@/components/FilterTabs";
+import { Search } from "lucide-react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
+// Mock last read data - in real app this would come from localStorage or backend
+const MOCK_LAST_READ = [
+  { surahNumber: 2, surahName: "Al-Baqarah", surahNameArabic: "البقرة", ayatNumber: 255 },
+  { surahNumber: 9, surahName: "Al-Mutahanah", surahNameArabic: "الممتحنة", ayatNumber: 1 },
+  { surahNumber: 18, surahName: "Al-Kahf", surahNameArabic: "الكهف", ayatNumber: 10 },
+];
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("sura");
+  const [lastRead] = useState(MOCK_LAST_READ);
   
   const { data: surahs, isLoading, error, refetch } = useQuery({
     queryKey: ["surahs"],
@@ -30,61 +43,63 @@ const Index = () => {
   }, [surahs, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pb-20 md:pb-0">
       <Header />
       
-      <main className="container flex-1 py-4 sm:py-6 md:py-8">
-        {/* Stats Section */}
-        <div className="mb-4 sm:mb-6 grid grid-cols-3 gap-2 sm:gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-3 sm:p-4 rounded-xl bg-card border border-border">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <BookMarked className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            </div>
-            <div className="text-center sm:text-left">
-              <p className="text-lg sm:text-xl font-bold text-foreground">114</p>
-              <p className="text-xs text-muted-foreground">Surah</p>
-            </div>
+      <main className="container flex-1 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
+        {/* Last Read Section */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm sm:text-base font-semibold text-foreground">
+              Terakhir Dibaca
+            </h2>
+            <button className="text-xs text-primary hover:underline">
+              Lihat semua
+            </button>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-3 sm:p-4 rounded-xl bg-card border border-border">
-            <div className="p-2 rounded-lg bg-accent/10">
-              <ScrollText className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+          
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3 pb-2">
+              {lastRead.length > 0 ? (
+                lastRead.map((item, index) => (
+                  <LastReadCard key={`${item.surahNumber}-${index}`} item={item} />
+                ))
+              ) : (
+                <LastReadEmpty />
+              )}
             </div>
-            <div className="text-center sm:text-left">
-              <p className="text-lg sm:text-xl font-bold text-foreground">6.236</p>
-              <p className="text-xs text-muted-foreground">Ayat</p>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-3 sm:p-4 rounded-xl bg-card border border-border">
-            <div className="p-2 rounded-lg bg-secondary/20">
-              <Layers className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
-            </div>
-            <div className="text-center sm:text-left">
-              <p className="text-lg sm:text-xl font-bold text-foreground">30</p>
-              <p className="text-xs text-muted-foreground">Juz</p>
-            </div>
-          </div>
-        </div>
+            <ScrollBar orientation="horizontal" className="h-1.5" />
+          </ScrollArea>
+        </section>
 
-        {/* Search */}
-        <div className="mb-4 sm:mb-6">
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="Cari nama surah atau arti..."
+        {/* Filter Tabs */}
+        <section className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <FilterTabs 
+            activeFilter={activeFilter} 
+            onFilterChange={setActiveFilter} 
           />
-        </div>
+          
+          {/* Search - visible on larger screens, or when tapped on mobile */}
+          <div className="w-full sm:w-auto sm:min-w-[280px]">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Cari surah..."
+            />
+          </div>
+        </section>
 
         {/* Results Count */}
         {searchQuery && (
-          <p className="mb-3 sm:mb-4 text-xs sm:text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Ditemukan {filteredSurahs.length} surah
           </p>
         )}
 
-        {/* Content */}
+        {/* Surah List */}
         {isLoading ? (
-          <div className="grid gap-2 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 12 }).map((_, i) => (
+          <div className="grid gap-2 sm:gap-3">
+            {Array.from({ length: 10 }).map((_, i) => (
               <SurahCardSkeleton key={i} />
             ))}
           </div>
@@ -94,7 +109,7 @@ const Index = () => {
             onRetry={() => refetch()} 
           />
         ) : (
-          <div className="grid gap-2 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-2 sm:gap-3">
             {filteredSurahs.map((surah, index) => (
               <SurahCard key={surah.nomor} surah={surah} index={index} />
             ))}
@@ -104,8 +119,8 @@ const Index = () => {
         {/* Empty State */}
         {!isLoading && !error && filteredSurahs.length === 0 && (
           <div className="py-12 text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-              <BookMarked className="h-8 w-8 text-muted-foreground" />
+            <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-muted flex items-center justify-center">
+              <Search className="h-8 w-8 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground text-sm sm:text-base">
               Tidak ditemukan surah dengan kata kunci "{searchQuery}"
@@ -114,8 +129,8 @@ const Index = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card mt-auto">
+      {/* Footer - hidden on mobile since we have bottom nav */}
+      <footer className="hidden md:block border-t border-border bg-card mt-auto">
         <div className="container py-4 sm:py-6 text-center">
           <p className="text-xs sm:text-sm text-muted-foreground">
             Sumber data:{" "}
@@ -130,6 +145,9 @@ const Index = () => {
           </p>
         </div>
       </footer>
+
+      {/* Bottom Navigation - mobile only */}
+      <BottomNav />
     </div>
   );
 };
